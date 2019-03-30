@@ -1,8 +1,20 @@
+
+import { 
+  hexToRgb,  
+  drawPolygon,
+  drawCircle
+} from "../../utilities/canvas-helpers.js";
+import { 
+  debounce,
+  getRandomNumbersBetween,
+  getRandomItemFrom,
+ } from "../../utilities/js-helpers.js";
+
 let canvas = document.querySelector('canvas');
 
 // find why the canvas does not span entire window
-let ourWindowWidth = window.innerWidth - 100;
-let ourWindowHeight = window.innerHeight - 100;
+let ourWindowWidth = window.innerWidth;
+let ourWindowHeight = window.innerHeight;
 canvas.width = ourWindowWidth;
 canvas.height = ourWindowHeight;
 let c = canvas.getContext('2d');
@@ -10,42 +22,23 @@ console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
 
 let mousePosition = {
   x: ourWindowWidth/2,
-  y: ourWindowHeight/2
-  
+  y: ourWindowHeight/2 
 }
-
+let allParticles = [];
+let particleCount = 15;
+let particleMinRadius = 10;
+let particleMaxRadius = 15;
+let particlesSpreadHook;
+let addParticlesHook;
 let colorsArray = [
-  '#FDBB6D',
-  '#D9727F',
-  '#AC6D83', 
-  '#685D79',
-  '#465C7A'
+  '#C70039'
 ]
-
-
-function hexToRgb(hex) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-  } : null;
-}
-
-
-function getRandomNumbersBetween(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function getRandomColorsFrom(colorsArray) {
-  return colorsArray[Math.floor(Math.random() * colorsArray.length)]
-}
 
 function particles (x, y, r) {
   this.x = x;
   this.y = y;
   this.r = r;
-  this.sides = getRandomNumbersBetween(3, 5);
+  this.sides = getRandomNumbersBetween(3, 3);
   this.velocity = {
     x: getRandomNumbersBetween(-10, 10)/10,
     y: getRandomNumbersBetween(-10, 10)/10
@@ -57,7 +50,7 @@ function particles (x, y, r) {
   this.rotation = getRandomNumbersBetween(0, 360) * (Math.PI/180);
   this.rotationOffset = Math.random() > 0.5 ? 0.01: -0.01;
   this.opacity = 1;
-  this.color = hexToRgb(getRandomColorsFrom(colorsArray));
+  this.color = hexToRgb(getRandomItemFrom(colorsArray));
 }
 
 particles.prototype.update = function () {
@@ -71,58 +64,49 @@ particles.prototype.update = function () {
 }
 
 particles.prototype.draw = function () {
-  // c.beginPath();
-  // for circles
-  // c.arc(this.x, this.y, this.r, Math.PI / 180 * 0, Math.PI / 180 * 360, false);  
+  //for circles
+  // TODO: fix the circle bug
+  // drawCircle(c,this.x, this.y, this.r, this.color, this.opacity, 'stroke')
   
-  // for squares
-  // c.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
-  // c.fillRect(this.x, this.y, 20, 20);
-  // c.fill();
-
-  polygon(c, this.x, this.y, this.r, this.sides, this.rotation, this.color, this.opacity);
+  // for polygons
+  drawPolygon(c, this.x, this.y, this.r, this.sides, this.rotation, this.color, this.opacity, 'stroke');
 }
 
 
-let allParticles;
-let particleCount = 15;
-let particleMinRadius = 10;
-let particleMaxRadius = 15;
-let particleSpawnRate = 2200/10;
-function init() {
-  allParticles = [];
-  // for (let i = 0; i < 1; i++) {
-  //   let r = getRandomNumbersBetween(particleMinRadius, particleMaxRadius);
-  //   let x = canvas.width/2;
-  //   let y = canvas.height/2 - 100;
-  //   allParticles.push(new particles(x, y, r));
-  // } 
+function stopAnimation() {
+  cancelAnimationFrame(addParticlesHook);
+  cancelAnimationFrame(particlesSpreadHook);
 }
 
-setInterval(() => {
-  allParticles.push(new particles(canvas.width/2, canvas.height/2 - 100, getRandomNumbersBetween(particleMinRadius, particleMaxRadius)));
-}, particleSpawnRate);
+let fpsInterval, now, then, elapsed;
+// initialize the timer variables and start the animation
+function startAnimating(fps) {
+    fpsInterval = 1000 / fps;
+    then = Date.now();
+    // allParticles = [];
+    addParticles();
+    particlesSpread();
+}
 
-function polygon(ctx, x, y, radius, sides, rotateAngle, color, opacity) {
-  if (sides < 3) return;
-  var a = ((Math.PI * 2)/sides);
-  ctx.save();
-  ctx.beginPath();
-  ctx.translate(x,y);
-  ctx.rotate(rotateAngle);
-  ctx.moveTo(radius,0);
-  for (let i = 1; i < sides; i++) {
-    ctx.lineTo(radius*Math.cos(a*i),radius*Math.sin(a*i));
+// the animation loop calculates time elapsed since the last loop
+// and only draws if your specified fps interval is achieved
+function addParticles() {
+  // request another frame
+  addParticlesHook = requestAnimationFrame(addParticles);
+  // calc elapsed time since last loop
+  now = Date.now();
+  elapsed = now - then;
+  // if enough time has elapsed, draw the next frame
+  if (elapsed > fpsInterval) {
+    // Get ready for next frame by setting then=now, but also adjust for your
+    // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+    then = now - (elapsed % fpsInterval);
+    // Put your drawing code here
+    allParticles.push(new particles(canvas.width/2, canvas.height/2 - 100, getRandomNumbersBetween(particleMinRadius, particleMaxRadius)));
   }
-  ctx.closePath();
-  ctx.shadowBlur = 5;
-  ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-  ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;;
-  ctx.fill();
-  ctx.restore();
 }
 
-function jAction () {
+function particlesSpread () {
   // to get trail effect
   // c.fillStyle = 'rgba(0, 0, 0, 0.1)';
   // c.fillRect(0, 0, ourWindowWidth, ourWindowHeight);  
@@ -133,37 +117,20 @@ function jAction () {
       allParticles.splice(index, 1);
     }
    });
-   console.log(`Particles Length`, allParticles.length);
-  jActionHandle = requestAnimationFrame(jAction);
+   console.log(`Paint Particles Length`, allParticles.length);
+   particlesSpreadHook = requestAnimationFrame(particlesSpread);
 }
 
-function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
-};
-
-init();
-jAction();
+startAnimating(5);
 
 /* event handlers */
 window.addEventListener('resize', debounce(function(event) {
-  ourWindowWidth = window.innerWidth - 100;
-  ourWindowHeight = window.innerHeight - 100;
+  ourWindowWidth = window.innerWidth;
+  ourWindowHeight = window.innerHeight;
   canvas.width = ourWindowWidth;
   canvas.height = ourWindowHeight;
   console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
-  init();
-  }, 500)
+  }, 1000)
 );
 
 
@@ -172,15 +139,11 @@ window.addEventListener('mousemove', function(event) {
   mousePosition.y = event.clientY;
 });
 
-var isPaused = false;
+document.getElementById('start').addEventListener('click', function(event) {
+  stopAnimation();
+  startAnimating(5);
+});
 
-window.onblur = function() {
-  isPaused = true;
-  // console.log('isPaused');
-}
-
-window.onfocus = function() {
-  isPaused = false;
-  // console.log('isPlaying');
-  // init();
-}
+document.getElementById('stop').addEventListener('click', function(event) {  
+  stopAnimation();
+});
