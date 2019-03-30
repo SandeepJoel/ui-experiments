@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>1</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+      <div class="box"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      <div class="piece"></div>
+      </div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+      <defs>
+        <filter id="goo-circle">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -7" result="goo-circle" />
+          <feBlend in="SourceGraphic" in2="goo-circle" />
+        </filter>
+        <filter id="goo-square">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo-square" />
+          <feComposite in="SourceGraphic" in2="goo-square" operator="atop"/>
+        </filter>        
+      </defs>
+    </svg>
+  <script src="http://localhost:9000/livereload.js"></script>
+</body>
+</html>

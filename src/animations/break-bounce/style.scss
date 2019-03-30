@@ -1,0 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
+html,body {
+  margin: 0;
+  background: rgb(41, 41, 41);  
+  // background: white;  
+  overflow: hidden;
+}
+
+canvas {
+  border: 5px solid grey;
+}

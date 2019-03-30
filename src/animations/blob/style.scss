@@ -1,0 +1,69 @@
+$primary:  tomato;
+$secondary: #26c281;
+$secondary: tomato;
+
+body {
+  background-color: #444444;
+}
+
+.container {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); 
+  overflow: hidden;
+  filter: url('#goo-square');
+  border: 1px solid blue;
+}
+
+.box {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: -99999px;
+  bottom: -99999px;
+  // without margin the element is not displayed in the viewport
+  margin: auto;
+  left: -99999px;
+  right: -99999px;
+  border-radius: 50%;
+  background-color: $primary;
+}
+
+@for $i from 1 through 10 {
+  $angle: random();
+  .piece:nth-child(#{$i}) {
+    width: 70px;
+    height: 70px;
+    position: absolute;
+    top: -99999px;
+    bottom: -99999px;
+    // without margin the element is not displayed in the viewport
+    margin: auto;
+    left: -99999px;
+    right: -99999px;
+    border-radius: 50%;
+    // border: 1px solid grey;
+    background-color: $secondary;
+    animation: ani-#{$i} 5s infinite; 
+  }
+
+  @keyframes ani-#{$i} {
+    0% {
+      // how does this animation work ? 
+      transform: rotate($angle * 360deg) translate(0px);      
+    }    
+    50% {
+      // how does this animation work ? 
+      transform: rotate($angle * 360deg) translate(150px * random() + 150px) scale(0.3);      
+    }
+    100% {
+      // how does this animation work ? 
+      transform: rotate($angle * 360deg) translate(0px);      
+    }   
+  }
+} 
+
+
