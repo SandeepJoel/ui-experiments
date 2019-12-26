@@ -11,10 +11,13 @@ import {
  } from "../../utilities/js-helpers.js";
 
 let canvas = document.querySelector('canvas');
+let canvasComputedStyleObject = window.getComputedStyle(canvas);
 
+// hack to extract only number units from css style properties; eg: extracting 20 from '20px' string
+let canvasBorderWidth = parseInt(canvasComputedStyleObject.borderWidth, 10);
 // find why the canvas does not span entire window
-let ourWindowWidth = window.innerWidth;
-let ourWindowHeight = window.innerHeight;
+let ourWindowWidth = window.innerWidth - (canvasBorderWidth * 2);
+let ourWindowHeight = window.innerHeight - (canvasBorderWidth * 2);
 canvas.width = ourWindowWidth;
 canvas.height = ourWindowHeight;
 let c = canvas.getContext('2d');
@@ -117,7 +120,7 @@ function particlesSpread () {
       allParticles.splice(index, 1);
     }
    });
-   console.log(`Paint Particles Length`, allParticles.length);
+  //  console.log(`Paint Particles Length`, allParticles.length);
    particlesSpreadHook = requestAnimationFrame(particlesSpread);
 }
 
@@ -125,8 +128,8 @@ startAnimating(5);
 
 /* event handlers */
 window.addEventListener('resize', debounce(function(event) {
-  ourWindowWidth = window.innerWidth;
-  ourWindowHeight = window.innerHeight;
+  ourWindowWidth = window.innerWidth - (canvasBorderWidth * 2);
+  ourWindowHeight = window.innerHeight - (canvasBorderWidth * 2);
   canvas.width = ourWindowWidth;
   canvas.height = ourWindowHeight;
   console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
@@ -139,11 +142,15 @@ window.addEventListener('mousemove', function(event) {
   mousePosition.y = event.clientY;
 });
 
-document.getElementById('start').addEventListener('click', function(event) {
-  stopAnimation();
-  startAnimating(5);
-});
+if (document.getElementById('start')) {
+  document.getElementById('start').addEventListener('click', function(event) {
+    stopAnimation();
+    startAnimating(5);
+  });
+}
 
-document.getElementById('stop').addEventListener('click', function(event) {  
-  stopAnimation();
-});
+if (document.getElementById('stop')) {
+  document.getElementById('stop').addEventListener('click', function(event) {  
+    stopAnimation();
+  });
+}

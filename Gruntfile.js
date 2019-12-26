@@ -14,9 +14,9 @@ module.exports = function(grunt) {
 			}
     },
     sync: {
-      copy_html_to_dist: {
+      copy_to_dist: {
         files: [
-          { cwd: 'src', src: '**/*.html', dest: 'dist' },
+          { cwd: 'src', src: '**/*.*', dest: 'dist' }
         ]
       }
     },
@@ -35,7 +35,7 @@ module.exports = function(grunt) {
     'http-server': {
       'dev': {
         root: 'dist',
-        port: 8080,        
+        port: 9090,        
         host: "127.0.0.1",
         showDir : false,
         ext: "html",
@@ -50,13 +50,16 @@ module.exports = function(grunt) {
         tasks: ['babel']
       },  
       html: {
-        files: '**/*.html',
+        files: '**/*.{html,png,jpg,jpeg,svg}',
         tasks: ['sync']
       },
 			css: {
 				files: '**/*.scss',
         tasks: ['sass'],
-			}
+      },
+      options: {
+        interval: 1000
+      }
 		}
 	});
   grunt.registerTask('default',[]);
