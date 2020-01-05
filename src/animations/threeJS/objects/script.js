@@ -20,15 +20,15 @@ var camera, scene, renderer;
 var controls;
 
 camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 100);
-camera.position.z = 50;
+camera.position.set(25, 25, 30);
 
 scene = new THREE.Scene();
-
+const gui = new GUI();
 // ground plane
-const planeSize = 75;
-const planeGeo = new THREE.PlaneBufferGeometry(planeSize + 25, planeSize -25);
+const planeSize = 60;
+const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
 const planeMat = new THREE.MeshPhongMaterial({
-  color: '#ccc',
+  color: '#666',
   side: THREE.DoubleSide,
 });
 
@@ -55,11 +55,20 @@ scene.add(plate);
   const sphereWidthDivisions = 32;
   const sphereHeightDivisions = 16;
   const sphereGeo = new THREE.SphereBufferGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
-  const sphereMat = new THREE.MeshPhongMaterial({ color: '#00b894' });
+  const sphereMat = new THREE.MeshPhongMaterial({ color: '#00b894', shininess: 10000000 });
 
   const mesh = new THREE.Mesh(sphereGeo, sphereMat);
-  mesh.position.set(-sphereRadius, sphereRadius * 3, 0);
+  mesh.position.set(0, sphereRadius, sphereRadius);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   scene.add(mesh);
+
+  let sphereGUI = gui.addFolder('spherePosition');
+  sphereGUI.addColor(new ColorGUIHelper(sphereMat, 'color'), 'value').name('SphereColor');
+  sphereGUI.add(mesh.position, 'x', -200, 200, 10).name('x');
+  sphereGUI.add(mesh.position, 'y', -200, 200, 10).name('y');
+  sphereGUI.add(mesh.position, 'z', -200, 200, 10).name('z');
+  sphereGUI.open();
 }
 
 // add hemisphere light
@@ -67,31 +76,27 @@ const skyColor = 0xB1E1FF;  // light blue
 const groundColor = 0xf7c683;
 const light = new THREE.HemisphereLight(skyColor, groundColor);
 light.position.set(0, 45, 0);
-// light.target.position.set(0, 0, 0);
 scene.add(light);
-// scene.add(light.target);
-const light2 = new THREE.DirectionalLight('#ffffff', 1);
-light2.position.set(0, 45, 45);
-light2.castShadow = true;
-scene.add(light2);
-
 
 const helper = new THREE.HemisphereLightHelper(light, 5);
 scene.add(helper);
-const helper2 = new THREE.DirectionalLightHelper(light2, 5);
-scene.add(helper2);
-updateLight();
-const gui = new GUI();
 gui.add(light, 'intensity', 0, 2, 0.01).name('Hemisphere Intensity');
 gui.addColor(new ColorGUIHelper(light, 'color'), 'value').name('SkyColor');
 gui.addColor(new ColorGUIHelper(light, 'groundColor'), 'value').name('GroundColor');
 
+// add directional light
+const light2 = new THREE.DirectionalLight('#ffffff', 0.5);
+light2.position.set(0, 45, 45);
+light2.castShadow = true;
+scene.add(light2);
+const helper2 = new THREE.DirectionalLightHelper(light2, 5);
+scene.add(helper2);
 gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
 gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
-makeXYZGUI(gui, light2.position, 'position', updateLight);
-// makeXYZGUI(gui, light.target.position, 'target', updateLight);
+makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light, helper));
+makeXYZGUI(gui, light2.target.position, 'Light target', updateLight.bind(this, true, light2, helper2));
 
-
+updateLight.call(this, false, light, helper);
 
 
 renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -100,6 +105,7 @@ renderer.setPixelRatio(window.devicePixelRatio);
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 window.addEventListener('mousemove', onMouseMove, false);
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 animate();
 
@@ -112,8 +118,10 @@ function makeXYZGUI(gui, vector3, name, onChangeFn) {
   folder.open();
 }
 
-function updateLight() {
-  // light.target.updateMatrixWorld();
+function updateLight(target, light, helper) {
+  if (target === true) {
+    light.target.updateMatrixWorld();
+  }  
   helper.update();
 }
 
