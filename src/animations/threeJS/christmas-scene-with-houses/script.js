@@ -37,110 +37,89 @@ plate.position.set(0, 0, 0);
 plate.receiveShadow = true;
 scene.add(plate);
 
-let parameters = {
-  radius: 25,
-  widthSegments: 10,
-  heightSegments: 8,
-  phiLength: 6.3,
-  thetaLength: 1.6,
-}
+// house
 {
-  // igloo
-  let igloo = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(
-      parameters.radius,
-      parameters.widthSegments,
-      parameters.heightSegments,
-      0,
-      parameters.phiLength,
-      0,
-      parameters.thetaLength
-    ),
-    new THREE.MeshPhongMaterial({ color: '#CCC', shininess: 1000, flatShading: true })
+  const size = 18;
+  // const wallColor = '#2c2c54';
+  const wallColor = '#b33939';
+  const walls = new THREE.Mesh(
+    new THREE.BoxBufferGeometry(size, size/1.3, size * 2),
+    new THREE.MeshPhongMaterial({ color: wallColor, shininess: 10000 })
   );
-  igloo.position.set(30, 1, 0)
-  scene.add(igloo);
+  walls.position.set(size * 2, size/(2*1.3), 0);
+
+
+  var trianglePoints = [];
+  let triangeleSize = 9;
+  trianglePoints.push(new THREE.Vector2(-triangeleSize, 0));
+  trianglePoints.push(new THREE.Vector2(triangeleSize, 0));
+  trianglePoints.push(new THREE.Vector2(0, triangeleSize));
+
+  var firstFloor = new THREE.Mesh(
+    new THREE.ExtrudeBufferGeometry(
+      new THREE.Shape(trianglePoints), {
+      bevelEnabled: false,
+      depth: size * 2
+    }),
+    new THREE.MeshPhongMaterial({ color: wallColor, shininess: 10000 })
+  );
+  firstFloor.position.set(size * 2, size/1.3, -size);
+  scene.add(firstFloor);
+
+
+  const roofLeft = new THREE.Mesh(
+    new THREE.BoxBufferGeometry(triangeleSize + 4, size * 2.2, 2),
+    new THREE.MeshPhongMaterial({ color: '#FFFFFF', shininess: 10000 })
+  );
+  roofLeft.position.set(30.7, 19.2, 0);
+  roofLeft.rotation.x = Math.PI / 2;
+  roofLeft.rotation.y = 0.75; 
+
+
+  const roofRight = new THREE.Mesh(
+    new THREE.BoxBufferGeometry(triangeleSize + 6, size * 2.2, 2),
+    new THREE.MeshPhongMaterial({ color: '#FFFFFF', shininess: 10000 })
+  );
+  roofRight.position.set(40.6, 19.6, 0);
+  roofRight.rotation.x = Math.PI / 2;
+  roofRight.rotation.y = 2.36
+
+  // gui.add(roofRight.position, 'x', -50, 50, 0.1).name(`x`);
+  // gui.add(roofRight.position, 'y', -50, 50, 0.1).name(`y`);
+  // gui.add(roofRight.position, 'z', -50, 50, 0.1).name(`z`);
+  // gui.add(roofRight.rotation, 'x', 0, Math.PI, 0.01).name(`rx`);
+  // gui.add(roofRight.rotation, 'y', 0, Math.PI, 0.01).name(`ry`);
+  // gui.add(roofRight.rotation, 'z', 0, Math.PI, 0.01).name(`rz`); 
 
   const door = new THREE.Mesh(
-    new THREE.CylinderBufferGeometry(10, 10, 15, 8, 1, false, 0, 6.3),
-    new THREE.MeshPhongMaterial({ color: '#ccc' })
+    new THREE.BoxBufferGeometry(size / 3, size / 2.5, size / 3),    
+    new THREE.MeshBasicMaterial({ color: '#ffda79' })
   );
+  door.position.set(36.5, 3.5, 15.6);
 
-  const doorInside = new THREE.Mesh(
-    new THREE.CylinderBufferGeometry(8, 8, 15, 8, 1, false, 0, 6.3),
-    new THREE.MeshPhongMaterial({ color: '#000' })
-  );
+  const house = new THREE.Group();  
+  house.add(roofLeft);
+  house.add(roofRight);
+  house.add(door);
+  house.add(walls);
+  house.add(firstFloor);
+  scene.add(house);
 
-  door.position.set(30, 1, 24);
-  door.rotation.x = Math.PI/2;
-  door.scale.x = 0.8
-  scene.add(door);  
-
-  doorInside.position.set(30, 1, 24.1);
-  doorInside.rotation.x = Math.PI / 2;
-  doorInside.scale.x = 0.8
-  scene.add(doorInside);
-  
-  gui.add(doorInside.position, 'x', -50, 50, 0.5).name(`x`);
-  gui.add(doorInside.position, 'y', -50, 50, 0.5).name(`y`);
-  gui.add(doorInside.position, 'z', -50, 50, 0.5).name(`z`);
-  gui.add(doorInside.rotation, 'x', 0, Math.PI, 0.01).name(`rx`);
-  gui.add(doorInside.rotation, 'y', 0, Math.PI, 0.01).name(`ry`);
-  gui.add(doorInside.rotation, 'z', 0, Math.PI, 0.01).name(`rz`);
-  gui.add(doorInside.scale, 'x', 0, 5, 0.1).name(`sx`);
-  gui.add(doorInside.scale, 'y', 0, 5, 0.1).name(`sy`);
-  gui.add(doorInside.scale, 'z', 0, 5, 0.1).name(`sz`);  
-}
-// house
-// {
-//   const size = 18;
-//   const walls = new THREE.Mesh(
-//     new THREE.BoxBufferGeometry(size, size, size *), 
-//     new THREE.MeshPhongMaterial({ color: '#b2bec3', shininess: 10000 })
-//   );
-//   walls.position.set(size * 2, size / 2, 0);
-//   walls.castShadow = true;
-//   walls.receiveShadow = true;
-
-//   const roofSize = size - 3;  
-//   const roof = new THREE.Mesh(
-//     new THREE.ConeBufferGeometry(roofSize, roofSize, 4),
-//     new THREE.MeshPhongMaterial({ color: '#636e72', shininess: 10000 })
-//   );
-//   roof.position.set(35.5, 25.5, 0);
-//   roof.rotation.y = 0.78;
-//   roof.castShadow = true;
-//   roof.receiveShadow = true;
-
-//   const door = new THREE.Mesh(
-//     new THREE.BoxBufferGeometry(size / 3, size / 1.5, size / 3),
-//     new THREE.MeshBasicMaterial({ color: '#000' })
-//   );
-//   door.position.set(36.5, 5, 6.01);
-
-//   const house = new THREE.Group();
-//   house.add(door);
-//   house.add(walls);
-//   house.add(roof);
-//   scene.add(house);
-//   // gui.add(house.position, 'x', -50, 50, 0.5).name(`x`);
-//   // gui.add(house.position, 'y', -50, 50, 0.5).name(`y`);
-//   // gui.add(house.position, 'z', -50, 50, 0.5).name(`z`);
-//   // gui.add(house.rotation, 'x', 0, Math.PI, 0.01).name(`rx`);
-//   // gui.add(house.rotation, 'y', 0, Math.PI, 0.01).name(`ry`);
-//   // gui.add(house.rotation, 'z', 0, Math.PI, 0.01).name(`rz`);
-//   // gui.add(house.scale, 'x', 0, 5, 0.1).name(`sx`);
-//   // gui.add(house.scale, 'y', 0, 5, 0.1).name(`sy`);
-//   // gui.add(house.scale, 'z', 0, 5, 0.1).name(`sz`);  
-// } 
+  const house2 = house.clone();  
+  house2.rotation.set(0, -Math.PI/2, 0);
+  house2.scale.set(1.4, 1.4, 1.4)
+  house2.position.set(36.5, 0, -59.2)  
+  scene.add(house2);
+} 
 
 // tree
 
 {
   const radius = 10;
+  const treeLeavesColor = '#218c74'
   const treeTop = new THREE.Mesh(
     new THREE.ConeBufferGeometry(radius, 30, 4),
-    new THREE.MeshPhongMaterial({ color: '#006266', shininess: 1000 })
+    new THREE.MeshPhongMaterial({ color: treeLeavesColor, shininess: 1000 })
   );
   treeTop.position.set(0, 20, 0);
   treeTop.castShadow = true;
@@ -158,22 +137,12 @@ let parameters = {
   const tree = new THREE.Group();
   tree.add(trunk);
   tree.add(treeTop);
-  
-  scene.add(tree);
-  // gui.addColor(new ColorGUIHelper(sphereMat, 'color'), 'value').name(`SphereColor`);  
+  scene.add(tree)
+
 }
 
-{
-    
-  const snowBall = new THREE.Mesh(
-    new THREE.OctahedronBufferGeometry(15, 2),
-    new THREE.MeshPhongMaterial({ color: '#ccc', shininess: 1000, flatShading: true })
-  );
-  snowBall.position.set(-30, 13, 10);
-  snowBall.castShadow = true;
-  snowBall.receiveShadow = true;
-  scene.add(snowBall);
-}
+
+
 
 {
   // gifts
@@ -223,7 +192,6 @@ let parameters = {
   scene.add(mesh);
 }
 
-
 // add hemisphere light
 const skyColor = 0xecf0f1;  // light blue
 const groundColor = 0xecf0f1;
@@ -240,7 +208,7 @@ const helper2 = new THREE.DirectionalLightHelper(light2, 5);
 scene.add(helper2);
 // gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
 gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
-makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light2, helper2));
+// makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light2, helper2));
 makeXYZGUI(gui, light2.target.position, 'Light target', updateLight.bind(this, true, light2, helper2));
 
 updateLight.call(this, false, light, helper2);
@@ -265,7 +233,7 @@ geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)
 geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 var particleMaterial = new THREE.PointsMaterial({ color: 0xFFFFFF });
 var particleSystem = new THREE.Points(geometry, particleMaterial);
-scene.add(particleSystem);
+// scene.add(particleSystem);
 
 
 renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -273,9 +241,9 @@ renderer.setClearColor(0xb2bec3);
 renderer.setPixelRatio(window.devicePixelRatio);
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.autoRotate = true;
-controls.enableZoom = false;
-controls.maxPolarAngle = Math.PI/2.5;
+// controls.autoRotate = true;
+// controls.enableZoom = false;
+// controls.maxPolarAngle = Math.PI/2.5;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
@@ -322,11 +290,3 @@ window.addEventListener('resize', function () {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-// Instantiate a exporter
-var exporter = new THREE.GLTFExporter();
-
-// Parse the input and generate the glTF output
-// exporter.parse(scene, function (gltf) {
-//   console.log(gltf);  
-// });
