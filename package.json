@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "grunt watch",
-    "dev": "grunt dev"
+    "dev": "grunt dev",
+    "dev-plain": "grunt http-server:dev-plain"
   },
   "author": "",
   "license": "ISC",

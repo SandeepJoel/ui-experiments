@@ -7,7 +7,10 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'src/',
-          src: ['**/*.scss'],
+          src: [
+            '**/*.scss',
+            '!animations/threeJS/**/*.scss'
+          ],
           ext: '.css',
           dest: 'dist/'
         }]
@@ -16,7 +19,14 @@ module.exports = function(grunt) {
     sync: {
       copy_to_dist: {
         files: [
-          { cwd: 'src', src: '**/*.*', dest: 'dist' }
+          { 
+            cwd: 'src', 
+            src: [
+              '**/*.*',
+              '!animations/threeJS/**/*.*'
+            ],
+            dest: 'dist'
+          }
         ]
       }
     },
@@ -26,7 +36,10 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd: 'src/',
-            src: ['**/*.js'],
+            src: [
+              '**/*.js',
+              '!animations/threeJS/**/*.*'
+            ],
             dest: 'dist/'
           }
         ]
@@ -41,29 +54,49 @@ module.exports = function(grunt) {
         ext: "html",
         runInBackground: true,
         openBrowser : true,
+      },
+      'dev-plain': {
+        root: 'src',
+        port: 9090,
+        host: "127.0.0.1",
+        showDir: false,
+        ext: "html",
+        runInBackground: false,
+        openBrowser: true,
       }
     },
     
 		watch: {
       js: {
-        files: '**/*.js',
+        files: [
+          '**/*.js',
+          '!animations/threeJS/**/*.*'
+        ],
         tasks: ['babel']
       },  
       html: {
-        files: '**/*.{html,png,jpg,jpeg,svg}',
+        files: [
+          '**/*.{html,png,jpg,jpeg,svg}',
+          '!animations/threeJS/**/*.*'
+        ],
         tasks: ['sync']
       },
 			css: {
-				files: '**/*.scss',
+        files: [
+          '**/*.scss',
+          '!animations/threeJS/**/*.*'
+        ],
         tasks: ['sass'],
       },
-      options: {
-        interval: 1000
-      }
 		}
-	});
+  });
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-http-server');
+
   grunt.registerTask('default',[]);
-  grunt.registerTask('dev', ['sync', 'babel', 'sass', 'http-server', 'watch']);
+  grunt.registerTask('dev', ['sync', 'babel', 'sass', 'http-server:dev', 'watch']);
+  
   // local url
   // file:///Users/sandeepjoel/myfiles/Mr.J5.0/Frontend/myCode/ui-experiments/animations/7-confetti/index.html
 }
