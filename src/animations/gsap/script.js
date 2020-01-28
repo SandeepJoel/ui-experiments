@@ -1,1 +1,0 @@
-TweenMax.from(".box", 10, { left: 400 });
