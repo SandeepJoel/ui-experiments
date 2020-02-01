@@ -65,7 +65,9 @@ module.exports = function(grunt) {
         openBrowser: true,
       }
     },
-    
+    clean: {
+      dist: ['dist/**'],
+    },
 		watch: {
       js: {
         files: [
@@ -93,9 +95,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.registerTask('default',[]);
-  grunt.registerTask('dev', ['sync', 'babel', 'sass', 'http-server:dev', 'watch']);
+  grunt.registerTask('dev', ['clean:dist', 'sync', 'babel', 'sass', 'http-server:dev', 'watch']);
   
   // local url
   // file:///Users/sandeepjoel/myfiles/Mr.J5.0/Frontend/myCode/ui-experiments/animations/7-confetti/index.html

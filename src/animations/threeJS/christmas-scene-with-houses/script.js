@@ -1,4 +1,5 @@
 import { GUI } from 'https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js';
+import { getRandomNumbersBetween } from '../../../utilities/js-helpers.js';
 
 class ColorGUIHelper {
   constructor(object, prop) {
@@ -13,6 +14,10 @@ class ColorGUIHelper {
   }
 }
 
+var giftColorArray = ['#FFC312', '#ED4C67', '#D980FA', '#6F1E51', '#273c75', '#12CBC4', '#78e08f', '#e74c3c', '#8c7ae6']
+
+var houseColorArray = ['#b33939', '#273c75', '#84817a'];
+
 var camera, scene, renderer;
 var controls;
 
@@ -23,9 +28,9 @@ scene = new THREE.Scene();
 const gui = new GUI();
 
 // ground plane
-const planeSize = 200;
-// const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
-const planeGeo = new THREE.CircleBufferGeometry(planeSize, 75);
+const planeSize = 300;
+const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
+// const planeGeo = new THREE.CircleBufferGeometry(planeSize, 75);
 const planeMat = new THREE.MeshPhongMaterial({
   color: '#ccc',
   side: THREE.DoubleSide,
@@ -37,160 +42,171 @@ plate.position.set(0, 0, 0);
 plate.receiveShadow = true;
 scene.add(plate);
 
-// house
+let houseCount = 0;
+for (let i = -1; i <= 0; i++) {
+  for (let j = -1; j <= 0; j++) {
+    // houses
+    houseCount++;
+    const size = 18;
+    const wallColor = houseColorArray[getRandomNumbersBetween(0, houseColorArray.length - 1)];
+    const walls = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(size, size / 1.3, size * 2),
+      new THREE.MeshPhongMaterial({ color: wallColor, shininess: 10000 })
+    );
+    walls.position.set(size * 2, size / (2 * 1.3), 0);
+
+    var trianglePoints = [];
+    let triangeleSize = 9;
+    trianglePoints.push(new THREE.Vector2(-triangeleSize, 0));
+    trianglePoints.push(new THREE.Vector2(triangeleSize, 0));
+    trianglePoints.push(new THREE.Vector2(0, triangeleSize));
+
+    var firstFloor = new THREE.Mesh(
+      new THREE.ExtrudeBufferGeometry(
+        new THREE.Shape(trianglePoints), {
+        bevelEnabled: false,
+        depth: size * 2
+      }),
+      new THREE.MeshPhongMaterial({ color: wallColor, shininess: 10000 })
+    );
+    firstFloor.position.set(size * 2, size / 1.3, -size);
+    scene.add(firstFloor);
+
+
+    const roofLeft = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(triangeleSize + 4, size * 2.2, 2),
+      new THREE.MeshPhongMaterial({ color: '#FFFFFF', shininess: 10000 })
+    );
+    roofLeft.position.set(30.7, 19.2, 0);
+    roofLeft.rotation.x = Math.PI / 2;
+    roofLeft.rotation.y = 0.75;
+
+
+    const roofRight = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(triangeleSize + 6, size * 2.2, 2),
+      new THREE.MeshPhongMaterial({ color: '#FFFFFF', shininess: 10000 })
+    );
+    roofRight.position.set(40.6, 19.6, 0);
+    roofRight.rotation.x = Math.PI / 2;
+    roofRight.rotation.y = 2.36
+
+    const door = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(size / 3, size / 2.5, size / 3),
+      new THREE.MeshBasicMaterial({ color: '#ffda79' })
+    );
+    door.position.set(36.5, 3.5, 15.6);
+
+    const houseSection = new THREE.Group();
+    houseSection.add(roofLeft);
+    houseSection.add(roofRight);
+    houseSection.add(door);
+    houseSection.add(walls);
+    houseSection.add(firstFloor);
+
+    const section1 = houseSection.clone();
+
+    const bigPart = houseSection.clone();
+    bigPart.rotation.set(0, -Math.PI / 2, 0);
+    bigPart.scale.set(1.4, 1.4, 1.4);
+    bigPart.position.set(36.5, 0, -59.2);
+
+      // if (houseCount === 2) {
+      //   const section2 = houseSection.clone();
+      //   section2.scale.set(0.8, 0.8, 0.8)
+      //   section2.position.set(26.5, 0, 0)
+      //   scene.add(section2);
+        
+      //   gui.add(section1.position, 'x', -70, 70, 0.1).name(`x`);
+      //   gui.add(section1.position, 'y', -70, 70, 0.1).name(`y`);
+      //   gui.add(section1.position, 'z', -70, 70, 0.1).name(`z`);
+      //   gui.add(section1.scale, 'x', 0, Math.PI, 0.01).name(`sx`);
+      //   gui.add(section1.scale, 'y', 0, Math.PI, 0.01).name(`sy`);
+      //   gui.add(section1.scale, 'z', 0, Math.PI, 0.01).name(`sz`);
+        
+      //   gui.add(section2.position, 'x', -70, 70, 0.1).name(`x`);
+      //   gui.add(section2.position, 'y', -70, 70, 0.1).name(`y`);
+      //   gui.add(section2.position, 'z', -70, 70, 0.1).name(`z`);      
+      //   gui.add(section2.scale, 'x', 0, Math.PI, 0.01).name(`sx`);
+      //   gui.add(section2.scale, 'y', 0, Math.PI, 0.01).name(`sy`);
+      //   gui.add(section2.scale, 'z', 0, Math.PI, 0.01).name(`sz`);
+      // }
+
+    section1.add(bigPart);
+    section1.position.set(100 * i + (60), 0, 80 * j);
+    scene.add(section1);
+    
+  }
+  
+}
+
+// // tree
+// {
+//   const radius = 10;
+//   const treeLeavesColor = '#218c74'
+//   const treeTop = new THREE.Mesh(
+//     new THREE.ConeBufferGeometry(radius, 30, 4),
+//     new THREE.MeshPhongMaterial({ color: treeLeavesColor, shininess: 1000 })
+//   );
+//   treeTop.position.set(0, 20, 0);
+//   treeTop.castShadow = true;
+//   treeTop.receiveShadow = true;
+
+//   // stem
+//   const side = 2;
+//   const brownColor = '#4F332D';
+//   const trunk = new THREE.Mesh(
+//     new THREE.CylinderBufferGeometry(side, side, side * 3, 5),
+//     new THREE.MeshPhongMaterial({ color: brownColor })
+//   );
+//   trunk.position.set(0, side, 0);
+
+//   const tree = new THREE.Group();
+//   tree.add(trunk);
+//   tree.add(treeTop);
+//   scene.add(tree);
+// }
+
+
 {
-  const size = 18;
-  // const wallColor = '#2c2c54';
-  const wallColor = '#b33939';
-  const walls = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(size, size/1.3, size * 2),
-    new THREE.MeshPhongMaterial({ color: wallColor, shininess: 10000 })
+  // road
+  const size = 35;
+  const roadColor = '#535c68'; // #7f8c8d
+  const road1 = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(planeSize, size),
+    new THREE.MeshPhongMaterial({ color: roadColor, shininess: 10000, side: THREE.DoubleSide })
   );
-  walls.position.set(size * 2, size/(2*1.3), 0);
+  road1.position.set(0, 1, 80);
+  road1.rotation.set(Math.PI/2, 0, 0);  
+  scene.add(road1);
 
+  const road2 = road1.clone();
+  road2.position.set(-80, 1, 0);
+  road2.rotation.set(Math.PI / 2, 0, Math.PI / 2);  
 
-  var trianglePoints = [];
-  let triangeleSize = 9;
-  trianglePoints.push(new THREE.Vector2(-triangeleSize, 0));
-  trianglePoints.push(new THREE.Vector2(triangeleSize, 0));
-  trianglePoints.push(new THREE.Vector2(0, triangeleSize));
-
-  var firstFloor = new THREE.Mesh(
-    new THREE.ExtrudeBufferGeometry(
-      new THREE.Shape(trianglePoints), {
-      bevelEnabled: false,
-      depth: size * 2
-    }),
-    new THREE.MeshPhongMaterial({ color: wallColor, shininess: 10000 })
-  );
-  firstFloor.position.set(size * 2, size/1.3, -size);
-  scene.add(firstFloor);
-
-
-  const roofLeft = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(triangeleSize + 4, size * 2.2, 2),
-    new THREE.MeshPhongMaterial({ color: '#FFFFFF', shininess: 10000 })
-  );
-  roofLeft.position.set(30.7, 19.2, 0);
-  roofLeft.rotation.x = Math.PI / 2;
-  roofLeft.rotation.y = 0.75; 
-
-
-  const roofRight = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(triangeleSize + 6, size * 2.2, 2),
-    new THREE.MeshPhongMaterial({ color: '#FFFFFF', shininess: 10000 })
-  );
-  roofRight.position.set(40.6, 19.6, 0);
-  roofRight.rotation.x = Math.PI / 2;
-  roofRight.rotation.y = 2.36
-
-  // gui.add(roofRight.position, 'x', -50, 50, 0.1).name(`x`);
-  // gui.add(roofRight.position, 'y', -50, 50, 0.1).name(`y`);
-  // gui.add(roofRight.position, 'z', -50, 50, 0.1).name(`z`);
-  // gui.add(roofRight.rotation, 'x', 0, Math.PI, 0.01).name(`rx`);
-  // gui.add(roofRight.rotation, 'y', 0, Math.PI, 0.01).name(`ry`);
-  // gui.add(roofRight.rotation, 'z', 0, Math.PI, 0.01).name(`rz`); 
-
-  const door = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(size / 3, size / 2.5, size / 3),    
-    new THREE.MeshBasicMaterial({ color: '#ffda79' })
-  );
-  door.position.set(36.5, 3.5, 15.6);
-
-  const house = new THREE.Group();  
-  house.add(roofLeft);
-  house.add(roofRight);
-  house.add(door);
-  house.add(walls);
-  house.add(firstFloor);
-  scene.add(house);
-
-  const house2 = house.clone();  
-  house2.rotation.set(0, -Math.PI/2, 0);
-  house2.scale.set(1.4, 1.4, 1.4)
-  house2.position.set(36.5, 0, -59.2)  
-  scene.add(house2);
-} 
-
-// tree
-
-{
-  const radius = 10;
-  const treeLeavesColor = '#218c74'
-  const treeTop = new THREE.Mesh(
-    new THREE.ConeBufferGeometry(radius, 30, 4),
-    new THREE.MeshPhongMaterial({ color: treeLeavesColor, shininess: 1000 })
-  );
-  treeTop.position.set(0, 20, 0);
-  treeTop.castShadow = true;
-  treeTop.receiveShadow = true;
-
-  // stem
-  const side = 2;
-  const brownColor = '#4F332D';
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderBufferGeometry(side, side, side * 3, 5),
-    new THREE.MeshPhongMaterial({ color: brownColor })
-  );
-  trunk.position.set(0, side, 0);
-
-  const tree = new THREE.Group();
-  tree.add(trunk);
-  tree.add(treeTop);
-  scene.add(tree)
+  // gui.add(road2.position, 'x', -70, 70, 0.1).name(`x`);
+  // gui.add(road2.position, 'y', -70, 70, 0.1).name(`y`);
+  // gui.add(road2.position, 'z', -70, 70, 0.1).name(`z`);
+  // gui.add(road2.rotation, 'x', 0, Math.PI, 0.01).name(`rx`);
+  // gui.add(road2.rotation, 'y', 0, Math.PI, 0.01).name(`ry`);
+  // gui.add(road2.rotation, 'z', 0, Math.PI, 0.01).name(`rz`); 
+  scene.add(road2);
 
 }
 
 
 
 
-{
-  // gifts
-  const size = 4;
-  const geo = new THREE.BoxBufferGeometry(size, size, size);
-  const mat = new THREE.MeshPhongMaterial({ color: '#e74c3c', shininess: 10000 });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(0, size/2, 15);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
-
-{
-  // gifts
-  const size = 4;
-  const geo = new THREE.BoxBufferGeometry(size, size, size);
-  const mat = new THREE.MeshPhongMaterial({ color: '#f1c40f', shininess: 10000 });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(7, size / 2, 13);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
-
-{
-  // gifts
-  const size = 4;
-  const geo = new THREE.BoxBufferGeometry(size, size, size);
-  const mat = new THREE.MeshPhongMaterial({ color: '#2ecc71', shininess: 10000 });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(5, size / 2, 18);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
-
-{
-  // gifts
-  const size = 4;
-  const geo = new THREE.BoxBufferGeometry(size, size, size);
-  const mat = new THREE.MeshPhongMaterial({ color: '#8c7ae6', shininess: 10000 });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(-5, size / 2, 13);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
+// {
+//   // gifts
+//   const size = 4;
+//   const geo = new THREE.BoxBufferGeometry(size, size, size);
+//   const mat = new THREE.MeshPhongMaterial({ color: '#e74c3c', shininess: 10000 });
+//   const mesh = new THREE.Mesh(geo, mat);
+//   mesh.position.set(0, size/2, 15);
+//   mesh.castShadow = true;
+//   mesh.receiveShadow = true;
+//   scene.add(mesh);
+// }
 
 // add hemisphere light
 const skyColor = 0xecf0f1;  // light blue
@@ -289,4 +305,12 @@ window.addEventListener('resize', function () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+window.addEventListener('mousedown', function () {
+  document.querySelector('body').classList.add('active');
+});
+
+window.addEventListener('mouseup', function () {
+  document.querySelector('body').classList.remove('active');
 });

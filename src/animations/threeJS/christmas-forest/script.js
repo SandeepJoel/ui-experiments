@@ -18,7 +18,7 @@ var camera, scene, renderer;
 var controls;
 THREE.Cache.enabled = true;
 camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 1000);
-camera.position.set(50, 25, 115);
+camera.position.set(50, 25, 110);
 
 scene = new THREE.Scene();
 const gui = new GUI();
@@ -222,7 +222,8 @@ renderer.setPixelRatio(window.devicePixelRatio);
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.autoRotate = true;
-controls.enableZoom = false;
+controls.autoRotateSpeed = 1;
+// controls.enableZoom = false;
 controls.maxPolarAngle = Math.PI/2.25;
 let rotationOffset = 0.2
 // controls.maxAzimuthAngle = (Math.PI/2) - rotationOffset;
@@ -274,6 +275,14 @@ window.addEventListener('resize', function () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+window.addEventListener('mousedown', function () {
+  document.querySelector('body').classList.add('active');
+});
+
+window.addEventListener('mouseup', function () {  
+  document.querySelector('body').classList.remove('active');
 });
 
 // Instantiate a exporter

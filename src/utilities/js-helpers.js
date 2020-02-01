@@ -14,7 +14,8 @@ export function debounce(func, wait, immediate) {
 	};
 };
 
-// function to get random whole number between a range
+// function to get random whole number between a range 
+//  Note: It is inclusive of the range elements
 export function getRandomNumbersBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
