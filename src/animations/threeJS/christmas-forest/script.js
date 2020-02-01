@@ -25,7 +25,6 @@ const gui = new GUI();
 
 // ground plane
 const planeSize = 200;
-// const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
 const planeGeo = new THREE.CircleBufferGeometry(planeSize, 75);
 const planeMat = new THREE.MeshPhongMaterial({
   color: '#ccc',
@@ -40,7 +39,6 @@ scene.add(plate);
 
 {
   // igloo
-
   let parameters = {
     radius: 25,
     widthSegments: 10,
@@ -173,7 +171,7 @@ scene.add(plate);
 
 
 // add hemisphere light
-const skyColor = 0xecf0f1;  // light blue
+const skyColor = 0xecf0f1;
 const groundColor = 0xecf0f1;
 const light = new THREE.HemisphereLight(skyColor, groundColor);
 light.position.set(0, 45, 0);
@@ -187,10 +185,9 @@ scene.add(light2);
 // const helper2 = new THREE.DirectionalLightHelper(light2, 5);
 // scene.add(helper2);
 // gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
-gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
+// gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
 // makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light2, helper2));
 // makeXYZGUI(gui, light2.target.position, 'Light target', updateLight.bind(this, true, light2, helper2));
-
 // updateLight.call(this, false, light, helper2);
 
 
@@ -209,7 +206,6 @@ for (var i = 0; i < particles; i++) {
 }
 
 geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-// geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
 geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 var particleMaterial = new THREE.PointsMaterial({ color: 0xFFFFFF });
 var particleSystem = new THREE.Points(geometry, particleMaterial);
@@ -223,11 +219,8 @@ controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.autoRotate = true;
 controls.autoRotateSpeed = 1;
-// controls.enableZoom = false;
+controls.enableZoom = false;
 controls.maxPolarAngle = Math.PI/2.25;
-let rotationOffset = 0.2
-// controls.maxAzimuthAngle = (Math.PI/2) - rotationOffset;
-// controls.minAzimuthAngle = -(Math.PI/2) + rotationOffset;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
@@ -239,8 +232,7 @@ function makeXYZGUI(gui, vector3, name, onChangeFn) {
   const folder = gui.addFolder(name);
   folder.add(vector3, 'x', -50, 50).onChange(onChangeFn);
   folder.add(vector3, 'y', -50, 50).onChange(onChangeFn);
-  folder.add(vector3, 'z', -50, 50).onChange(onChangeFn);
-  // folder.open();
+  folder.add(vector3, 'z', -50, 50).onChange(onChangeFn); 
 }
 
 function updateLight(target, light, helper) {
@@ -249,10 +241,6 @@ function updateLight(target, light, helper) {
   }  
   helper.update();
 }
-
-var angle = 0;
-var rad = 150;
-var rAngle = 0;
 
 function animate() {
   // var positions = geometry.attributes.position.array;
@@ -284,11 +272,3 @@ window.addEventListener('mousedown', function () {
 window.addEventListener('mouseup', function () {  
   document.querySelector('body').classList.remove('active');
 });
-
-// Instantiate a exporter
-var exporter = new THREE.GLTFExporter();
-
-// Parse the input and generate the glTF output
-// exporter.parse(scene, function (gltf) {
-//   console.log(gltf);  
-// });
