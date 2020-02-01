@@ -1,5 +1,6 @@
 import { GUI } from 'https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js';
 import { getRandomNumbersBetween } from '../../../utilities/js-helpers.js';
+import { ColorGUIHelper } from '../../../utilities/dat-ui-helpers.js'
 
 var manager = new THREE.LoadingManager();
 manager.onStart = function (url, itemsLoaded, itemsTotal) {
@@ -15,20 +16,6 @@ manager.onProgress = function (url, itemsLoaded, itemsTotal) {
   console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
 };
 
-
-class ColorGUIHelper {
-  constructor(object, prop) {
-    this.object = object;
-    this.prop = prop;
-  }
-  get value() {
-    return `#${this.object[this.prop].getHexString()}`;
-  }
-  set value(hexString) {
-    this.object[this.prop].set(hexString);
-  }
-}
-
 var camera, scene, renderer;
 var controls;
 THREE.Cache.enabled = true;
@@ -43,13 +30,12 @@ const planeSize = 200;
 const planeGeo = new THREE.CircleBufferGeometry(planeSize, 75);
 const planeMat = new THREE.MeshPhongMaterial({
   color: '#ccc',
-  side: THREE.DoubleSide,
+  // side: THREE.DoubleSide,
 });
 
 const plate = new THREE.Mesh(planeGeo, planeMat);
 plate.rotation.x = Math.PI * -0.5;
 plate.position.set(0, 0, 0);
-plate.receiveShadow = true;
 scene.add(plate);
 
 {
@@ -111,8 +97,6 @@ scene.add(plate);
     new THREE.MeshPhongMaterial({ color: '#006266', shininess: 1000 })
   );
   treeTop.position.set(0, 20, 0);
-  treeTop.castShadow = true;
-  treeTop.receiveShadow = true;
 
   // stem
   const side = 2;
@@ -149,8 +133,6 @@ scene.add(plate);
     new THREE.MeshPhongMaterial({ color: '#ccc', shininess: 1000, flatShading: true })
   );
   snowBall.position.set(-85, 7, 60);
-  snowBall.castShadow = true;
-  snowBall.receiveShadow = true;
   scene.add(snowBall);
 }
 
@@ -195,7 +177,6 @@ scene.add(light);
 // add directional light
 const light2 = new THREE.DirectionalLight('#ffffff', 0.35);
 light2.position.set(0, 45, 95);
-light2.castShadow = true;
 scene.add(light2);
 // const helper2 = new THREE.DirectionalLightHelper(light2, 5);
 // scene.add(helper2);
@@ -238,7 +219,6 @@ controls.enableZoom = false;
 controls.maxPolarAngle = Math.PI/2.25;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 animate();
 

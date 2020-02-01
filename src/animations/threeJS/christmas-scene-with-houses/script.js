@@ -1,18 +1,6 @@
 import { GUI } from 'https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js';
 import { getRandomNumbersBetween } from '../../../utilities/js-helpers.js';
-
-class ColorGUIHelper {
-  constructor(object, prop) {
-    this.object = object;
-    this.prop = prop;
-  }
-  get value() {
-    return `#${this.object[this.prop].getHexString()}`;
-  }
-  set value(hexString) {
-    this.object[this.prop].set(hexString);
-  }
-}
+import { ColorGUIHelper } from '../../../utilities/dat-ui-helpers.js'
 
 var giftColorArray = ['#FFC312', '#f78fb3', '#c44569', '#D980FA', '#6F1E51', '#273c75', '#82ccdd', '#78e08f', '#ff4d4d', '#ff793f', '#006266']
 
@@ -32,13 +20,12 @@ const planeSize = 300;
 const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
 const planeMat = new THREE.MeshPhongMaterial({
   color: '#fff',
-  side: THREE.DoubleSide,
+  // side: THREE.DoubleSide,
 });
 
 const plate = new THREE.Mesh(planeGeo, planeMat);
 plate.rotation.x = Math.PI * -0.5;
 plate.position.set(0, 0, 0);
-plate.receiveShadow = true;
 scene.add(plate);
 
 let aboveGroundOffset = 0.1;
@@ -148,8 +135,6 @@ for (let i = -1; i <= 0; i++) {
         new THREE.MeshPhongMaterial({ color: treeLeavesColor, shininess: 200 })
       );
       treeTop.position.set(0, 20, 0);
-      treeTop.castShadow = true;
-      treeTop.receiveShadow = true;
 
       // stem
       const side = 2;
@@ -237,7 +222,6 @@ scene.add(light);
 // add directional light
 const light2 = new THREE.DirectionalLight('#ffffff', 0.35);
 light2.position.set(0, 45, 95);
-light2.castShadow = true;
 scene.add(light2);
 // const helper2 = new THREE.DirectionalLightHelper(light2, 5);
 // scene.add(helper2);
@@ -280,7 +264,6 @@ controls.enableZoom = false;
 controls.maxPolarAngle = Math.PI/2.5;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 animate();
 
