@@ -1,6 +1,21 @@
 import { GUI } from 'https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js';
 import { getRandomNumbersBetween } from '../../../utilities/js-helpers.js';
 
+var manager = new THREE.LoadingManager();
+manager.onStart = function (url, itemsLoaded, itemsTotal) {
+  console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+};
+
+manager.onLoad = function () {
+  console.log('Loading complete!');
+};
+
+
+manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+  console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+};
+
+
 class ColorGUIHelper {
   constructor(object, prop) {
     this.object = object;
@@ -140,7 +155,7 @@ scene.add(plate);
 }
 
 {
-  let loader = new THREE.FontLoader();
+  let loader = new THREE.FontLoader(manager);
   loader.load('../../../assets/fonts/El Messiri Medium_Regular.json', function (font) {    
     let wishText1 = new THREE.Mesh(
       new THREE.TextBufferGeometry('Happy', {
