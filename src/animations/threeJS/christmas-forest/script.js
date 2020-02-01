@@ -29,6 +29,45 @@ class ColorGUIHelper {
   }
 }
 
+class MinMaxGUIHelper {
+  constructor(obj, minProp, maxProp, minDif) {
+    this.obj = obj;
+    this.minProp = minProp;
+    this.maxProp = maxProp;
+    this.minDif = minDif;
+  }
+  get min() {
+    return this.obj[this.minProp];
+  }
+  set min(v) {
+    this.obj[this.minProp] = v;
+    this.obj[this.maxProp] = Math.max(this.obj[this.maxProp], v + this.minDif);
+  }
+  get max() {
+    return this.obj[this.maxProp];
+  }
+  set max(v) {
+    this.obj[this.maxProp] = v;
+    this.min = this.min;  // this will call the min setter
+  }
+}
+
+
+class DimensionGUIHelper {
+  constructor(obj, minProp, maxProp) {
+    this.obj = obj;
+    this.minProp = minProp;
+    this.maxProp = maxProp;
+  }
+  get value() {
+    return this.obj[this.maxProp] * 2;
+  }
+  set value(v) {
+    this.obj[this.maxProp] = v / 2;
+    this.obj[this.minProp] = v / -2;
+  }
+}
+
 var camera, scene, renderer;
 var controls;
 THREE.Cache.enabled = true;
@@ -74,11 +113,13 @@ scene.add(plate);
     ),
     new THREE.MeshPhongMaterial({ color: '#CCC', shininess: 1000, flatShading: true })
   );  
+  iglooDome.castShadow = true;
 
   const door = new THREE.Mesh(
     new THREE.CylinderBufferGeometry(10, 10, 15, 8, 1, false, 0, 6.3),
     new THREE.MeshPhongMaterial({ color: '#ccc' })
   );
+  door.castShadow = true;
 
   const doorInside = new THREE.Mesh(
     new THREE.CylinderBufferGeometry(8, 8, 15, 8, 1, false, 0, 6.3),
@@ -122,6 +163,8 @@ scene.add(plate);
     new THREE.MeshPhongMaterial({ color: brownColor })
   );
   trunk.position.set(0, side, 0);
+  trunk.castShadow = true;
+  trunk.receiveShadow = true;
 
   const tree = new THREE.Group();
   tree.add(trunk);
@@ -167,7 +210,8 @@ scene.add(plate);
       new THREE.MeshPhongMaterial({ color: '#CCCCCC' })
     );
     wishText1.position.set(24.1, 5, 44.1);
-    wishText1.rotation.y = -0.43;    
+    wishText1.rotation.y = -0.43;
+    wishText1.castShadow = true;
     scene.add(wishText1);
 
     let wishText2 = new THREE.Mesh(
@@ -180,6 +224,7 @@ scene.add(plate);
     );
     wishText2.position.set(25.3, 5, 66.3);
     wishText2.rotation.y = -0.43;
+    wishText2.castShadow = true;
     scene.add(wishText2);
   });
 }
@@ -194,17 +239,42 @@ scene.add(light);
 
 // add directional light
 const light2 = new THREE.DirectionalLight('#ffffff', 0.35);
-light2.position.set(0, 45, 95);
+light2.position.set(0, 45, 188);
 light2.castShadow = true;
-scene.add(light2);
-// const helper2 = new THREE.DirectionalLightHelper(light2, 5);
-// scene.add(helper2);
-// gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
-// gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
-// makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light2, helper2));
-// makeXYZGUI(gui, light2.target.position, 'Light target', updateLight.bind(this, true, light2, helper2));
-// updateLight.call(this, false, light, helper2);
 
+light2.shadow.camera.left = -8;
+light2.shadow.camera.right = 8;
+light2.shadow.camera.bottom = -8;
+light2.shadow.camera.top = 8;
+light2.shadow.camera.zoom = 0.08;
+
+scene.add(light2);
+
+const cameraHelper = new THREE.CameraHelper(light2.shadow.camera);
+// scene.add(cameraHelper);
+
+const helper2 = new THREE.DirectionalLightHelper(light2, 5);
+// scene.add(helper2);
+gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
+gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
+makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light2, helper2));
+makeXYZGUI(gui, light2.target.position, 'Light target', updateLight.bind(this, true, light2, helper2));
+// updateLight.call(this, false, light2, helper2);
+
+{
+  const folder = gui.addFolder('Shadow Camera');
+  folder.open();
+  folder.add(new DimensionGUIHelper(light2.shadow.camera, 'left', 'right'), 'value', 1, 100)
+    .name('width')
+    .onChange(updateLight.bind(this, false, light2, helper2));
+  folder.add(new DimensionGUIHelper(light2.shadow.camera, 'bottom', 'top'), 'value', 1, 100)
+    .name('height')
+    .onChange(updateLight.bind(this, false, light2, helper2));
+  const minMaxGUIHelper = new MinMaxGUIHelper(light2.shadow.camera, 'near', 'far', 0.1);
+  folder.add(minMaxGUIHelper, 'min', 1, 1000, 10).name('near').onChange(updateLight.bind(this, false, light2, helper2));
+  folder.add(minMaxGUIHelper, 'max', 1, 1000, 10).name('far').onChange(updateLight.bind(this, false, light2, helper2));
+  folder.add(light2.shadow.camera, 'zoom', 0.01, 2, 0.01).onChange(updateLight.bind(this, false, light2, helper2));
+}
 
 // snow effect
 const geometry = new THREE.BufferGeometry();
@@ -230,6 +300,7 @@ scene.add(particleSystem);
 renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setClearColor(0xb2bec3);
 renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.autoRotate = true;
@@ -245,15 +316,19 @@ animate();
 
 function makeXYZGUI(gui, vector3, name, onChangeFn) {
   const folder = gui.addFolder(name);
-  folder.add(vector3, 'x', -50, 50).onChange(onChangeFn);
-  folder.add(vector3, 'y', -50, 50).onChange(onChangeFn);
-  folder.add(vector3, 'z', -50, 50).onChange(onChangeFn); 
+  folder.add(vector3, 'x', -250, 250).onChange(onChangeFn);
+  folder.add(vector3, 'y', -250, 250).onChange(onChangeFn);
+  folder.add(vector3, 'z', -250, 250).onChange(onChangeFn); 
 }
 
 function updateLight(target, light, helper) {
   if (target === true) {
     light.target.updateMatrixWorld();
   }  
+  // update the light's shadow camera's projection matrix
+  light.shadow.camera.updateProjectionMatrix();
+  // and now update the camera helper we're using to show the light's shadow camera
+  cameraHelper.update();
   helper.update();
 }
 
