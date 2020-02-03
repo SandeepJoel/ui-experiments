@@ -1,6 +1,4 @@
-import { GUI } from 'https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js';
 import { getRandomNumbersBetween } from '../../utilities/js-helpers.js';
-
 class CssVariableColor {
   constructor(prop) {
     this.prop = prop;
@@ -13,7 +11,7 @@ class CssVariableColor {
   }
 }
 
-const gui = new GUI();
+const gui = new dat.GUI();
 const flatColors = ['#487eb0', '#2ecc71', '#ee5253', '#feca57', '#8c7ae6'];
 const options = {
   randomize: true  
