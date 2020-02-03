@@ -1,21 +1,27 @@
-$primary:  tomato;
-$secondary: #26c281;
-$secondary: tomato;
+:root {
+  --primary-color: #ff6347;
+  --background-color: #353b48; 
+}
 
 body {
-  background-color: #444444;
+  background-color: var(--background-color);
+}
+
+body, html {
+  overflow: hidden;
 }
 
 .container {
   position: absolute;
-  width: 600px;
-  height: 600px;
+  width: 60vw;
+  height: 60vw;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); 
   overflow: hidden;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
   filter: url('#goo-square');
   border: 1px solid blue;
+  animation: roll 10s ease-in infinite;
 }
 
 .box {
@@ -29,14 +35,16 @@ body {
   left: -99999px;
   right: -99999px;
   border-radius: 50%;
-  background-color: $primary;
+  background-color: var(--primary-color);
+  animation: shrink 5s infinite; 
+  transition: background-color 0.6s ease-in-out;
 }
 
-@for $i from 1 through 10 {
+@for $i from 1 through 20 {
   $angle: random();
   .piece:nth-child(#{$i}) {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     position: absolute;
     top: -99999px;
     bottom: -99999px;
@@ -45,9 +53,9 @@ body {
     left: -99999px;
     right: -99999px;
     border-radius: 50%;
-    // border: 1px solid grey;
-    background-color: $secondary;
+    background-color: var(--primary-color);
     animation: ani-#{$i} 5s infinite; 
+    transition: background-color 0.6s ease-in-out;
   }
 
   @keyframes ani-#{$i} {
@@ -67,3 +75,26 @@ body {
 } 
 
 
+@keyframes roll {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg); 
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg); 
+  }
+}
+
+@keyframes shrink {
+  0% {
+    transform: scale(1); 
+  }
+
+  50% {
+    transform: scale(0.5); 
+  }
+
+  100% {
+    transform: scale(1); 
+  }  
+}

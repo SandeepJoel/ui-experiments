@@ -180,7 +180,7 @@ light2.position.set(0, 45, 95);
 scene.add(light2);
 // const helper2 = new THREE.DirectionalLightHelper(light2, 5);
 // scene.add(helper2);
-// gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
+gui.addColor(new ColorGUIHelper(light2, 'color'), 'value').name('Directional Color');
 // gui.add(light2, 'intensity', 0, 2, 0.01).name('DirectionalLight Intensity');
 // makeXYZGUI(gui, light2.position, 'Light source', updateLight.bind(this, false, light2, helper2));
 // makeXYZGUI(gui, light2.target.position, 'Light target', updateLight.bind(this, true, light2, helper2));
