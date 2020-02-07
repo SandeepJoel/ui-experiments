@@ -10,26 +10,65 @@
   <link rel="shortcut icon" type="image/png" href="../../assets/my-favicon/favicon.ico" />
 </head>
 
-<body>  
-  <svg id="a1" preserveAspectRatio="none" viewBox="0 0 580 400">
-    <path xmlns="http://www.w3.org/2000/svg" stroke="#000" stroke-width="3" />
-    <defs>
-      <linearGradient id="myGradient1" spreadMethod="pad">
-        <stop offset="0%" stop-color="#f093fb" stop-opacity="1" />
-        <stop offset="100%" stop-color="#f5576c" stop-opacity="1" />
-      </linearGradient>
-    </defs>
-  </svg>
+<body>
+  <div class="svg-list">
+    <svg class="primary blob1" preserveAspectRatio="none" viewBox="0 0 580 400">      
+      <path xmlns="http://www.w3.org/2000/svg" fill="url(#myGradient1)"/>
+      <defs>
+        <linearGradient id="myGradient1" spreadMethod="pad">
+          <stop offset="0%" stop-color="#4facfe" stop-opacity="1" />
+          <stop offset="100%" stop-color="#00f2fe" stop-opacity="1" />
+        </linearGradient>
+      </defs>
+    </svg> 
+    
+    <svg class="blob1 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="#000"/>      
+    </svg>
 
-    <svg id="a2" preserveAspectRatio="none" viewBox="0 0 580 400" class="hide">
-      <path xmlns="http://www.w3.org/2000/svg" stroke="#000" stroke-width="3" />
+    <svg class="blob2 rotate-180 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="url(#myGradient2)" />
       <defs>
         <linearGradient id="myGradient2" spreadMethod="pad">
+          <stop offset="0%" stop-color="#f093fb" stop-opacity="1" />
+          <stop offset="100%" stop-color="#f5576c" stop-opacity="1" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <svg class="blob2 rotate-180 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="#fff"/>      
+    </svg>
+
+    <svg class="blob1 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="url(#myGradient3)" />
+      <defs>
+        <linearGradient id="myGradient3" spreadMethod="pad">
           <stop offset="0%" stop-color="#84fab0" stop-opacity="1" />
           <stop offset="100%" stop-color="#8fd3f4" stop-opacity="1" />
         </linearGradient>
       </defs>
     </svg>
+
+    <svg class="blob1 rotate-180 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="#000" />
+    </svg>
+
+    <svg class="blob1 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="url(#myGradient4)" />
+      <defs>
+        <linearGradient id="myGradient4" spreadMethod="pad">
+          <stop offset="0%" stop-color="#fa709a" stop-opacity="1" />
+          <stop offset="100%" stop-color="#fee140" stop-opacity="1" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <svg class="blob1 rotate-180 hide" preserveAspectRatio="none" viewBox="0 0 580 400">
+      <path xmlns="http://www.w3.org/2000/svg" fill="#fff" />
+    </svg>
+    
+  </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
 <script type='module' src="./script.js"> </script>
