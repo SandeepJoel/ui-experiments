@@ -31,7 +31,7 @@ function particles (x, y, r) {
   this.x = x;
   this.y = y;
   this.r = r;
-  this.sides = getRandomNumbersBetween(3, 6);
+  this.sides = getRandomNumbersBetween(3, 5);
   this.velocity = {
     x: getRandomNumbersBetween(-10, 10)/10,
     y: getRandomNumbersBetween(-10, 10)/10
@@ -39,7 +39,7 @@ function particles (x, y, r) {
   this.friction = 0.75;
   this.gravity = 1;
   this.sizeReduction = 3;
-  this.ttl = 300;
+  this.ttl = 500;
   this.rotation = getRandomNumbersBetween(0, 360) * (Math.PI/180);
   this.rotationOffset = Math.random() > 0.5 ? 0.01: -0.01;
   this.opacity = 1;
@@ -93,9 +93,11 @@ function addParticles() {
 
 function particlesSpread () {
   // to get trail effect
-  // c.fillStyle = 'rgba(0, 0, 0, 0.1)';
-  // c.fillRect(0, 0, window.innerWidth, window.innerHeight);  
-  c.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  c.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  c.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  
+  // use below code to disable trail effect;
+  // c.clearRect(0, 0, window.innerWidth, window.innerHeight);
   
   allParticles.forEach((element, index) => {
     element.update();
@@ -106,7 +108,7 @@ function particlesSpread () {
    requestAnimationFrame(particlesSpread);
 }
 
-startAnimating(5);
+startAnimating(3.5);
 
 /* event handlers */
 window.addEventListener('resize', debounce(function(event) {
