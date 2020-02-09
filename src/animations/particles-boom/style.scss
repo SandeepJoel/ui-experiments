@@ -3,12 +3,10 @@
 }
 
 html,body {
-  margin: 0;
-  // background: #ecf0f1;  
-  background: white;  
+  margin: 0; 
   overflow: hidden;
 }
 
 canvas {
-  border: 5px solid grey;
+  cursor: pointer;
 }

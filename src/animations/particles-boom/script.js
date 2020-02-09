@@ -1,17 +1,14 @@
 let canvas = document.querySelector('canvas');
-
-// find why the canvas does not span entire window
-let ourWindowWidth = window.innerWidth - 100;
-let ourWindowHeight = window.innerHeight - 100;
-canvas.width = ourWindowWidth;
-canvas.height = ourWindowHeight;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 let c = canvas.getContext('2d');
-console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
 
-let mousePosition = {
-  x: ourWindowWidth/2,
-  y: ourWindowHeight/2
+const mouse = {
+  x: window.innerWidth/2,
+  y: window.innerHeight/2,
+  gravity: false
 }
+
 
 let colorsArray = [
   '#FDBB6D',
@@ -20,6 +17,11 @@ let colorsArray = [
   '#685D79',
   '#465C7A'
 ]
+
+let pointerConfig = {
+  color: '#000',
+  radius: 25
+}
 
 function getRandomNumbersBetween(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -37,6 +39,8 @@ function circle (x, y, r, dx, dy) {
   this.maxBoom = getRandomNumbersBetween(40, 75);
   this.dx = dx;
   this.dy = dy;
+  this.velocityLimit = Math.abs(this.dx * 30);
+  this.velocity = Math.abs(this.dx * 0.075);
   this.color = getRandomColorsFrom(colorsArray);
 }
 
@@ -49,37 +53,58 @@ circle.prototype.animate = function () {
   // updating values for next rendering
   this.x += this.dx;
   this.y += this.dy;
-  if (this.x + this.r > ourWindowWidth || this.x - this.r < 0) {
+  if (this.x + this.r > window.innerWidth || this.x - this.r < 0) {
     this.dx = -this.dx;
   }
 
-  if (this.y + this.r > ourWindowHeight || this.y - this.r < 0) {
+  if (this.y + this.r > window.innerHeight || this.y - this.r < 0) {
     this.dy = -this.dy;
   }
 
-if (Math.abs(this.x - mousePosition.x) < cursorOffset && Math.abs(this.y - mousePosition.y) < cursorOffset && this.r < this.maxBoom) {
-    this.r += radiusChange;
-  } else {
-    if (this.r > this.originalr) {
-      this.r -= radiusChange;
-    }    
-  }  
+  if (mouse.gravity) {
+    let xOffset = (mouse.x - this.x) / 200;
+    let yOffset = (mouse.y - this.y) / 200;    
+    this.dx = xOffset * (Math.random() > 0.5 ? 2: 0.1);
+    this.dy = yOffset * (Math.random() > 0.5 ? 2: 0.1);
+  } else if (Math.abs(this.dx) > 0.2 && this.state !== 'accelerate') {
+    this.dx -= (this.dx + 0.2)
+    this.dy -= (this.dy + 0.2)   
+  } else if (Math.abs(this.dx) < 0.2) {
+    this.dx = this.dx > 0 ? 0.2 : -0.2;
+    this.dy = this.dy > 0 ? 0.2 : -0.2;
+  }
+
+  // when the objects touch the cursor, 
+  // they will accelerate with velocity
+  if (
+    Math.abs(this.x - mouse.x) < pointerConfig.radius + this.r && 
+    Math.abs(this.y - mouse.y) < pointerConfig.radius + this.r ) {
+      this.state = 'accelerate'; 
+      this.dx = (this.dx > 0 ? this.velocityLimit : -this.velocityLimit);
+      this.dy = (this.dy > 0 ? this.velocityLimit : -this.velocityLimit);
+  } else if (Math.abs(this.dx) > 0.2) {
+      this.dx -= (this.dx > 0 ? this.velocity : -this.velocity);
+      this.dy -= (this.dy > 0 ? this.velocity : -this.velocity);
+  } else if (Math.abs(this.dx) < 0.2) {
+    this.state = undefined;
+    this.dx = this.dx > 0 ? 0.2 : -0.2;
+    this.dy = this.dy > 0 ? 0.2 : -0.2;
+  }
+
 }
 
-let radiusChange = 1;
+let radiusChange = 10;
 let allCircles;
-let circleCount = 150;
+let circleCount = 75;
 let circleMinRadius = 5;
 let circleMaxRadius = 15;
-let cursorOffset = 50;
 function init() {
   allCircles = [];
   for (let i = 0; i < circleCount; i++) {
     let r = getRandomNumbersBetween(circleMinRadius, circleMaxRadius);
     // how does the below formula work for perfectly aligning the circles inside the canvas
-    let x = Math.random() * (ourWindowWidth - 2 * r) + r;
-    let y = Math.random() * (ourWindowHeight - 2 * r) + r;
-    // Math.random() > 0.5 ? 1 : -1 --> this randomizes the direction
+    let x = Math.random() * (window.innerWidth - 2 * r) + r;
+    let y = Math.random() * (window.innerHeight - 2 * r) + r;
     let dx = (Math.random() > 0.5 ? 1 : -1) * 0.2;
     let dy = (Math.random() > 0.5 ? 1 : -1) * 0.2;
     allCircles.push(new circle(x, y, r, dx, dy));
@@ -87,10 +112,15 @@ function init() {
 }
 
 function jAction () {
-  c.clearRect(0, 0, ourWindowWidth, ourWindowHeight);
+  c.fillStyle = "#ccc"
+  c.fillRect(0, 0, window.innerWidth, window.innerHeight);
   for (let i of allCircles) {
     i.animate();
   }
+  c.beginPath();
+  c.arc(mouse.x, mouse.y, pointerConfig.radius, Math.PI / 180 * 0, Math.PI / 180 * 360, false);
+  c.fillStyle = pointerConfig.color;
+  c.fill();
   jActionHandle = requestAnimationFrame(jAction);
 }
 
@@ -98,17 +128,22 @@ init();
 jAction();
 
 /* event handlers */
-window.addEventListener('resize', function(event) {
-  ourWindowWidth = window.innerWidth - 100;
-  ourWindowHeight = window.innerHeight - 100;
-  canvas.width = ourWindowWidth;
-  canvas.height = ourWindowHeight;
-  console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
+window.addEventListener('resize', function(event) { 
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
   init();
 });
 
 
 window.addEventListener('mousemove', function(event) {
-  mousePosition.x = event.clientX;
-  mousePosition.y = event.clientY;
+  mouse.x = event.clientX;
+  mouse.y = event.clientY;
+});
+
+window.addEventListener('mousedown', function (event) {
+  mouse.gravity = true;
+});
+
+window.addEventListener('mouseup', function (event) {
+  mouse.gravity = false;
 });
