@@ -11,28 +11,18 @@ import {
  } from "../../utilities/js-helpers.js";
 
 let canvas = document.querySelector('canvas');
-let canvasComputedStyleObject = window.getComputedStyle(canvas);
-
-// hack to extract only number units from css style properties; eg: extracting 20 from '20px' string
-let canvasBorderWidth = parseInt(canvasComputedStyleObject.borderWidth, 10);
-// find why the canvas does not span entire window
-let ourWindowWidth = window.innerWidth - (canvasBorderWidth * 2);
-let ourWindowHeight = window.innerHeight - (canvasBorderWidth * 2);
-canvas.width = ourWindowWidth;
-canvas.height = ourWindowHeight;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 let c = canvas.getContext('2d');
-console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
+console.log(`Width - ${window.innerWidth} Height - ${window.innerHeight}`);
 
 let mousePosition = {
-  x: ourWindowWidth/2,
-  y: ourWindowHeight/2 
+  x: window.innerWidth/2,
+  y: window.innerHeight/2 
 }
 let allParticles = [];
-let particleCount = 15;
-let particleMinRadius = 10;
-let particleMaxRadius = 15;
-let particlesSpreadHook;
-let addParticlesHook;
+let particleMinRadius = 20;
+let particleMaxRadius = 25;
 let colorsArray = [
   '#C70039'
 ]
@@ -41,7 +31,7 @@ function particles (x, y, r) {
   this.x = x;
   this.y = y;
   this.r = r;
-  this.sides = getRandomNumbersBetween(3, 3);
+  this.sides = getRandomNumbersBetween(3, 6);
   this.velocity = {
     x: getRandomNumbersBetween(-10, 10)/10,
     y: getRandomNumbersBetween(-10, 10)/10
@@ -56,19 +46,17 @@ function particles (x, y, r) {
   this.color = hexToRgb(getRandomItemFrom(colorsArray));
 }
 
-particles.prototype.update = function () {
+particles.prototype.update = function () {  
   this.y += this.velocity.y;
   this.x += this.velocity.x;
   this.ttl -= 1;
-  this.rotation += this.rotationOffset;
-  // why this needs to be less than ttl ? debug the bug
+  this.rotation += this.rotationOffset;  
   this.opacity -= 1/this.ttl;
   this.draw();
 }
 
 particles.prototype.draw = function () {
   //for circles
-  // TODO: fix the circle bug
   // drawCircle(c,this.x, this.y, this.r, this.color, this.opacity, 'stroke')
   
   // for polygons
@@ -76,17 +64,11 @@ particles.prototype.draw = function () {
 }
 
 
-function stopAnimation() {
-  cancelAnimationFrame(addParticlesHook);
-  cancelAnimationFrame(particlesSpreadHook);
-}
-
 let fpsInterval, now, then, elapsed;
 // initialize the timer variables and start the animation
 function startAnimating(fps) {
     fpsInterval = 1000 / fps;
-    then = Date.now();
-    // allParticles = [];
+    then = Date.now();    
     addParticles();
     particlesSpread();
 }
@@ -95,7 +77,7 @@ function startAnimating(fps) {
 // and only draws if your specified fps interval is achieved
 function addParticles() {
   // request another frame
-  addParticlesHook = requestAnimationFrame(addParticles);
+  requestAnimationFrame(addParticles);
   // calc elapsed time since last loop
   now = Date.now();
   elapsed = now - then;
@@ -105,52 +87,37 @@ function addParticles() {
     // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
     then = now - (elapsed % fpsInterval);
     // Put your drawing code here
-    allParticles.push(new particles(canvas.width/2, canvas.height/2 - 100, getRandomNumbersBetween(particleMinRadius, particleMaxRadius)));
+    allParticles.push(new particles(canvas.width/2, (canvas.height/2 - 100), getRandomNumbersBetween(particleMinRadius, particleMaxRadius)));
   }
 }
 
 function particlesSpread () {
   // to get trail effect
   // c.fillStyle = 'rgba(0, 0, 0, 0.1)';
-  // c.fillRect(0, 0, ourWindowWidth, ourWindowHeight);  
-  c.clearRect(0, 0, ourWindowWidth, ourWindowHeight);
+  // c.fillRect(0, 0, window.innerWidth, window.innerHeight);  
+  c.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  
   allParticles.forEach((element, index) => {
     element.update();
-    if (element.ttl <= 0) {
+    if (element.ttl <= 1) {
       allParticles.splice(index, 1);
     }
    });
-  //  console.log(`Paint Particles Length`, allParticles.length);
-   particlesSpreadHook = requestAnimationFrame(particlesSpread);
+   requestAnimationFrame(particlesSpread);
 }
 
 startAnimating(5);
 
 /* event handlers */
 window.addEventListener('resize', debounce(function(event) {
-  ourWindowWidth = window.innerWidth - (canvasBorderWidth * 2);
-  ourWindowHeight = window.innerHeight - (canvasBorderWidth * 2);
-  canvas.width = ourWindowWidth;
-  canvas.height = ourWindowHeight;
-  console.log(`Width - ${ourWindowWidth} Height - ${ourWindowHeight}`);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  console.log(`Width - ${window.innerWidth} Height - ${window.innerHeight}`);
   }, 1000)
 );
 
 
 window.addEventListener('mousemove', function(event) {
   mousePosition.x = event.clientX;
-  mousePosition.y = event.clientY;
+  mousePosition.y = event.clientY;  
 });
-
-if (document.getElementById('start')) {
-  document.getElementById('start').addEventListener('click', function(event) {
-    stopAnimation();
-    startAnimating(5);
-  });
-}
-
-if (document.getElementById('stop')) {
-  document.getElementById('stop').addEventListener('click', function(event) {  
-    stopAnimation();
-  });
-}
