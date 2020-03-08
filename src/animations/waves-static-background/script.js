@@ -8,14 +8,14 @@ function generateRandomString() {
   return Math.random().toString(36).substring(7);
 }
 
-// This function returns svg dom object of the wave based
+// This function returns svg dom object of the liquid based
 // of the passed config object
 function generateWaveHtml(config, svgClasses) {
-  let { type, wave, colors, color } = config;
-  let isGradient = type === 'gradient';
+  let { fill, liquid, colors, color } = config;
+  let isGradient = fill === 'gradient';
   let id = generateRandomString();
   let str = `
-    <svg xmlns="http://www.w3.org/2000/svg" class="${svgClasses} ${wave}" 
+    <svg xmlns="http://www.w3.org/2000/svg" class="${svgClasses} ${liquid}" 
       preserveAspectRatio="none" viewBox="0 0 580 400">
       <path fill="${isGradient ? `url(#${id})` : color}" />
         ${isGradient ? `<defs>
@@ -35,39 +35,39 @@ function generateWaveHtml(config, svgClasses) {
 function init() {
   const colorsConfig = [
     {
-      type: 'gradient',
+      fill: 'gradient',
       colors: ['#4facfe', '#00f2fe'],
-      wave: 'blob1'
+      liquid: 'blob1'
     },
     {
-      type: 'singleColor',
+      fill: 'singleColor',
       color: '#000',
-      wave: 'blob1'
+      liquid: 'blob1'
     },
     {
-      type: 'gradient',
+      fill: 'gradient',
       colors: ['#f093fb', '#f5576c'],
-      wave: 'blob2'
+      liquid: 'blob2'
     },
     {
-      type: 'singleColor',
+      fill: 'singleColor',
       color: '#FFF',
-      wave: 'blob2'
+      liquid: 'blob2'
     },
     {
-      type: 'gradient',
+      fill: 'gradient',
       colors: ['#84fab0', '#8fd3f4'],
-      wave: 'blob1'
+      liquid: 'blob1'
     },
     {
-      type: 'singleColor',
+      fill: 'singleColor',
       color: '#000',
-      wave: 'blob1'
+      liquid: 'blob1'
     },
     {
-      type: 'gradient',
+      fill: 'gradient',
       colors: ['#fa709a', '#fee140'],
-      wave: 'blob1'
+      liquid: 'blob1'
     },
   ];
 
