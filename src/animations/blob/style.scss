@@ -13,8 +13,8 @@ body, html {
 
 .container {
   position: absolute;
-  width: 100vw;
-  height: 100vw;
+  width: 50vw; // TODO: Find why 100vw make the animation jerky
+  height: 50vw;
   top: 50%;
   overflow: hidden;
   left: 50%;
