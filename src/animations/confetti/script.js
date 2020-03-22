@@ -2,7 +2,8 @@
 import { 
   hexToRgb,  
   drawPolygon,
-  drawCircle
+  drawCircle,
+  getRandomHexColor
 } from "../../utilities/canvas-helpers.js";
 import { 
   debounce,
@@ -14,18 +15,31 @@ let canvas = document.querySelector('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let c = canvas.getContext('2d');
-console.log(`Width - ${window.innerWidth} Height - ${window.innerHeight}`);
 
-let mousePosition = {
-  x: window.innerWidth/2,
-  y: window.innerHeight/2 
-}
 let allParticles = [];
 let particleMinRadius = 20;
 let particleMaxRadius = 25;
-let colorsArray = [
-  '#C70039'
-]
+let config = {
+  particleColor: '#C70039',
+  backgroundColor: '#000000',
+  spread: 'medium',
+  position: 'right'
+}
+
+let spread = config.spread === 'medium' ? 500: 1000;
+let horizontalPosition;
+switch (config.position) {
+  case 'right':
+    horizontalPosition = 2/3;
+  break;
+  case 'left':
+    horizontalPosition = 1/3.3;
+  break;
+  case 'center':
+    horizontalPosition = 1/2;
+  break;        
+}
+
 
 function particles (x, y, r) {
   this.x = x;
@@ -35,15 +49,12 @@ function particles (x, y, r) {
   this.velocity = {
     x: getRandomNumbersBetween(-10, 10)/10,
     y: getRandomNumbersBetween(-10, 10)/10
-  };
-  this.friction = 0.75;
-  this.gravity = 1;
-  this.sizeReduction = 3;
-  this.ttl = 500;
+  };    
+  this.ttl = spread;
   this.rotation = getRandomNumbersBetween(0, 360) * (Math.PI/180);
   this.rotationOffset = Math.random() > 0.5 ? 0.01: -0.01;
   this.opacity = 1;
-  this.color = hexToRgb(getRandomItemFrom(colorsArray));
+  this.color = hexToRgb(config.particleColor);
 }
 
 particles.prototype.update = function () {  
@@ -87,13 +98,15 @@ function addParticles() {
     // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
     then = now - (elapsed % fpsInterval);
     // Put your drawing code here
-    allParticles.push(new particles(canvas.width/2, (canvas.height/2 - 100), getRandomNumbersBetween(particleMinRadius, particleMaxRadius)));
+    allParticles.push(new particles(canvas.width * (horizontalPosition), (canvas.height/2 - 50), getRandomNumbersBetween(particleMinRadius, particleMaxRadius)));
   }
 }
 
+let bgColor = hexToRgb(config.backgroundColor);
 function particlesSpread () {
   // to get trail effect
-  c.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  hexToRgb(config.backgroundColor);
+  c.fillStyle = `rgba(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, 0.1)`;
   c.fillRect(0, 0, window.innerWidth, window.innerHeight);
   
   // use below code to disable trail effect;
@@ -114,12 +127,5 @@ startAnimating(3.5);
 window.addEventListener('resize', debounce(function(event) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  console.log(`Width - ${window.innerWidth} Height - ${window.innerHeight}`);
   }, 1000)
 );
-
-
-window.addEventListener('mousemove', function(event) {
-  mousePosition.x = event.clientX;
-  mousePosition.y = event.clientY;  
-});

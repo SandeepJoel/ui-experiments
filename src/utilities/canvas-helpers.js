@@ -7,6 +7,15 @@ export function hexToRgb(hex) {
   } : null;
 }
 
+export function getRandomHexColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 export function drawPolygon(ctx, x, y, radius, sides, rotateAngle, color, opacity, styleType) {
   if (sides < 3) return;
   var a = ((Math.PI * 2)/sides);
