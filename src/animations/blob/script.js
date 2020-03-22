@@ -26,7 +26,7 @@ gui.add(options, 'randomize').name('Randomize').onChange(function() {
     randomizeColors();
   } else {
     clearInterval(randomTick);
-  }  
+  }
 })
 
 if (options.randomize) {
