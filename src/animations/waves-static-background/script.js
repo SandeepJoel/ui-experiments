@@ -75,18 +75,30 @@ function init() {
   svgRoot.appendChild(generateWaveHtml(colorsConfig[0], 'primary'));
   
   let index = 1;
-  setInterval(() => {
+  function waveAnimate() {
     index = index % colorsConfig.length;
     let currentPrimary = document.querySelector('.primary');
     svgRoot.appendChild(generateWaveHtml(colorsConfig[index], 'primary'));
 
     let currentSecondary = document.querySelector('.secondary');
     if (currentSecondary) {
-      currentSecondary.remove()
+      currentSecondary.remove();
     }
     currentPrimary.classList.remove('primary');
     currentPrimary.classList.add('secondary');
     index++;
-  }, 10000);
+  }
+
+  let noOfSeconds = 10;
+  let last = 0.01;
+  function animate(now) {
+    // for every 2 seconds call the inner function
+    if (now - last >= noOfSeconds * 1000) {
+      last = now;
+      waveAnimate();
+    }
+    requestAnimationFrame(animate);
+  };
+  animate();
 }
 init();

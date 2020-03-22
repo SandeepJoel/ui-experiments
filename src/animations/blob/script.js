@@ -14,7 +14,8 @@ class CssVariableColor {
 const gui = new dat.GUI();
 const flatColors = ['#487eb0', '#2ecc71', '#ee5253', '#feca57', '#8c7ae6', '#10ac84', '#2f3640', '#192a56', '#B33771'];
 const options = {
-  randomize: true  
+  randomize: true,
+  position: 'center'
 }
 
 let randomTick;
@@ -39,6 +40,8 @@ function randomizeColors(now) {
   // for every 2 seconds call the inner function
   if (!last || now - last >= noOfSeconds * 1000) {
     last = now;
+
+    // our work
     primaryColor.setValue(
       flatColors[getRandomNumbersBetween(0, flatColors.length - 1)]
     );
