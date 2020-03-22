@@ -1,0 +1,18 @@
+<svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+
+ <g>
+  <title>background</title>
+  <rect x="-1" y="-1" width="582" height="402" id="canvas_background" fill="#fff"/>
+  <g id="canvasGrid" display="none">
+   <rect id="svg_1" width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path stroke="#000" fill="#000000" stroke-width="1.5" stroke-opacity="null" d="m0.66626,-23.9507c92.88985,-38.0567 415.73159,-79.41544 424.13994,-6.84669c8.40832,72.56874 21.89996,171.53866 -90.07596,142.03853c-111.97592,-29.50013 -5.69902,166.59132 -171.88864,106.94186c-166.18962,-59.64946 -53.74023,101.42691 -149.27599,109.12152c-191.07151,15.38919 -105.78919,-313.19849 -12.89935,-351.25522l0,0z" id="svg_5"/>
+  <path id="svg_2" d="m163.07692,251.46154" opacity="0.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#000000"/>
+  <path id="svg_3" d="m176.92308,151.46154" opacity="0.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#000000"/>
+  <path id="svg_4" d="m200,176.07692" opacity="0.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#000000"/>
+ </g>
+</svg>

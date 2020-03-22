@@ -13,6 +13,14 @@ function generateRandomString() {
 function generateWaveHtml(config, svgClasses) {
   let { fill, liquid, colors, color } = config;
   let isGradient = fill === 'gradient';
+  switch (liquid) {
+    case 'blob4':
+    case 'blob5':
+    case 'blob6':
+      svgClasses += ' rotate-180';
+    break;
+  }
+
   let id = generateRandomString();
   let str = `
     <svg xmlns="http://www.w3.org/2000/svg" class="${svgClasses} ${liquid}" 
@@ -42,7 +50,7 @@ function init() {
     {
       fill: 'singleColor',
       color: '#000',
-      liquid: 'blob1'
+      liquid: 'blob4'
     },
     {
       fill: 'gradient',
@@ -52,17 +60,17 @@ function init() {
     {
       fill: 'singleColor',
       color: '#FFF',
-      liquid: 'blob2'
+      liquid: 'blob5'
     },
     {
       fill: 'gradient',
       colors: ['#84fab0', '#8fd3f4'],
-      liquid: 'blob1'
+      liquid: 'blob3'
     },
     {
       fill: 'singleColor',
       color: '#000',
-      liquid: 'blob1'
+      liquid: 'blob6'
     },
     {
       fill: 'gradient',
