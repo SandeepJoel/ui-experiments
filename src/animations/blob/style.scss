@@ -1,17 +1,17 @@
-:root {
-  --primary-color: #ff6347;
-  --background-color: #353b48; 
-}
-
-body {
-  background-color: var(--background-color);
-}
-
 body, html {
   overflow: hidden;
 }
 
-.container {
+.effect-container {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.blob-container {
   position: absolute;
   width: 50vw; // TODO: Find why 100vw make the animation jerky
   height: 50vw;
@@ -34,7 +34,6 @@ body, html {
   left: -99999px;
   right: -99999px;
   border-radius: 50%;
-  background-color: var(--primary-color);
   animation: shrink 15s infinite; 
   transition: background-color 4s linear;
 }
@@ -52,7 +51,6 @@ body, html {
     left: -99999px;
     right: -99999px;
     border-radius: 50%;
-    background-color: var(--primary-color);
     animation: ani-#{$i} 15s infinite; 
     transition: background-color 4s linear;
   }

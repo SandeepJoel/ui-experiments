@@ -98,15 +98,16 @@ function init() {
   }
 
   let noOfSeconds = 10;
-  let last = 0.01;
+  let last = 0;
   function animate(now) {
-    // for every 2 seconds call the inner function
-    if (now - last >= noOfSeconds * 1000) {
+    // for every 10 seconds call the inner function
+    // TODO: 'now' variable creates a memory leak
+    if ((now - last) > (noOfSeconds * 1000)) {  
       last = now;
       waveAnimate();
     }
     requestAnimationFrame(animate);
   };
-  animate();
+  requestAnimationFrame(animate);
 }
 init();
