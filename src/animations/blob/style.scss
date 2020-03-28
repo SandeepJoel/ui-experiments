@@ -1,17 +1,17 @@
-:root {
-  --primary-color: #ff6347;
-  --background-color: #353b48; 
-}
-
-body {
-  background-color: var(--background-color);
-}
-
 body, html {
   overflow: hidden;
 }
 
-.container {
+.effect-container {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.blob-container {
   position: absolute;
   width: 50vw; // TODO: Find why 100vw make the animation jerky
   height: 50vw;
@@ -20,7 +20,8 @@ body, html {
   left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
   filter: url('#goo-square');
-  animation: roll 45s steps(3, end) infinite;
+  animation: roll 45s steps(3, end) infinite 2s;
+
 }
 
 .box {
@@ -34,8 +35,7 @@ body, html {
   left: -99999px;
   right: -99999px;
   border-radius: 50%;
-  background-color: var(--primary-color);
-  animation: shrink 15s infinite; 
+  animation: shrink 15s infinite 2s; 
   transition: background-color 4s linear;
 }
 
@@ -52,8 +52,7 @@ body, html {
     left: -99999px;
     right: -99999px;
     border-radius: 50%;
-    background-color: var(--primary-color);
-    animation: ani-#{$i} 15s infinite; 
+    animation: ani-#{$i} 15s infinite 2s; 
     transition: background-color 4s linear;
   }
 
@@ -63,7 +62,7 @@ body, html {
     }    
     50% {
       // how does this animation work ? 
-      transform: rotate($angle * 360deg) translate(150px * random() + 150px) scale(0.15);      
+      transform: rotate($angle * 360deg) translate(100px * random() + 150px) scale(0.15);      
     }
     100% {
       transform: rotate($angle * 360deg) translate(0px) scale(1);      

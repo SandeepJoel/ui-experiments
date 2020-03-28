@@ -1,52 +1,53 @@
 import { getRandomNumbersBetween } from '../../utilities/js-helpers.js';
-class CssVariableColor {
-  constructor(prop) {
-    this.prop = prop;
-  }
-  get value() {
-    return getComputedStyle(document.documentElement).getPropertyValue(this.prop).trim();
-  }
-  set value(hexString) {
-    document.documentElement.style.setProperty(this.prop, hexString);
-  }
+
+const options = {
+  randomize: false,
+  position: 'left',
+  backgroundColor: '#181818',
+  blobColor: '#ff6347'
 }
+let timerId;
 
 const gui = new dat.GUI();
-const flatColors = ['#487eb0', '#2ecc71', '#ee5253', '#feca57', '#8c7ae6', '#10ac84', '#2f3640', '#192a56', '#B33771'];
-const options = {
-  randomize: true,
-  position: 'center'
-}
-
-let randomTick;
-
-let primaryColor = gui.addColor(new CssVariableColor('--primary-color'), 'value').name('Blob');
-gui.addColor(new CssVariableColor('--background-color'), 'value').name('Background');
+gui.addColor(options, 'backgroundColor').name('Background');
 gui.add(options, 'randomize').name('Randomize').onChange(function() {
   if (options.randomize) {
     randomizeColors();
   } else {
-    cancelAnimationFrame(randomTick)
+    cancelAnimationFrame(timerId)
   }
 })
+let primaryColor = gui.addColor(options, 'blobColor').name('Blob');
 
-if (options.randomize) {
-  randomizeColors();
-}
+var last = Date.now(); // timestamp of the last render() call
+var noOfSeconds = 6;
+var currentTime;
 
-var last = 0; // timestamp of the last render() call
-var noOfSeconds = 5;
-function randomizeColors(now) {
-  // for every 2 seconds call the inner function
-  if (!last || now - last >= noOfSeconds * 1000) {
-    last = now;
+function randomizeColors() {
+  currentTime = Date.now();
+  if (currentTime - last >= noOfSeconds * 1000) {
+    last = currentTime;
 
     // our work
-    primaryColor.setValue(
-      flatColors[getRandomNumbersBetween(0, flatColors.length - 1)]
-    );
+    primaryColor.setValue(flatColors[getRandomNumbersBetween(0, flatColors.length - 1)]); 
+    // the above line automatically does this -> options.blobColor = color;
+    setColors();
   }
-  randomTick = requestAnimationFrame(randomizeColors);
+  timerId = requestAnimationFrame(randomizeColors);
 }
 
-gui.close()
+function setColors() {
+  document.querySelector('.box').style.backgroundColor = options.blobColor;
+  [].forEach.call(document.querySelectorAll('.piece'), function (div) {
+    div.style.backgroundColor = options.blobColor;
+  });
+}
+
+function init() {
+  if (options.randomize) {
+    randomizeColors();
+  }
+  setColors();
+}
+
+init();

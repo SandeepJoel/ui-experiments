@@ -11,14 +11,14 @@ import {
   getRandomItemFrom,
  } from "../../utilities/js-helpers.js";
 
-let canvas = document.querySelector('canvas');
+let canvas = document.getElementById('canvas-007');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-let c = canvas.getContext('2d');
 
 let allParticles = [];
 let particleMinRadius = 20;
 let particleMaxRadius = 25;
+
 let config = {
   particleColor: '#C70039',
   backgroundColor: '#000000',
@@ -26,6 +26,7 @@ let config = {
   position: 'right'
 }
 
+let bgColor = hexToRgb(config.backgroundColor);
 let spread = config.spread === 'medium' ? 500: 1000;
 let horizontalPosition;
 switch (config.position) {
@@ -102,8 +103,8 @@ function addParticles() {
   }
 }
 
-let bgColor = hexToRgb(config.backgroundColor);
 function particlesSpread () {
+  let c = canvas.getContext('2d');
   // to get trail effect
   hexToRgb(config.backgroundColor);
   c.fillStyle = `rgba(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, 0.1)`;
